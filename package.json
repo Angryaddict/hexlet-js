@@ -1,0 +1,19 @@
+{
+  "name": "hexlet",
+  "version": "1.0.0",
+  "description": "Мой первый проект на Хекслете.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "module",
+    "url": "git+https://github.com/Angryaddict/hexlet-js.git"
+  },
+  "author": "Evgeniy Evstafiev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Angryaddict/hexlet-js/issues"
+  },
+  "homepage": "https://github.com/Angryaddict/hexlet-js#readme"
+}
