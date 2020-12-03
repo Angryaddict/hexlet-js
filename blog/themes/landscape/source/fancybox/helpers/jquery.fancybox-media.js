@@ -63,29 +63,27 @@
  *          http://maps.google.com/?ll=48.859463,2.292626&spn=0.000965,0.002642&t=m&z=19&layer=c&cbll=48.859524,2.292532&panoid=YJ0lq28OOy3VT2IqIuVY0g&cbp=12,151.58,,0,-15.56
  */
 (function ($) {
-  "use strict";
+  // Shortcut for fancyBox object
+  const F = $.fancybox;
+  const format = function (url, rez, params) {
+    params = params || '';
 
-  //Shortcut for fancyBox object
-  var F = $.fancybox,
-    format = function (url, rez, params) {
-      params = params || "";
+    if ($.type(params) === 'object') {
+      params = $.param(params, true);
+    }
 
-      if ($.type(params) === "object") {
-        params = $.param(params, true);
-      }
+    $.each(rez, (key, value) => {
+      url = url.replace(`$${key}`, value || '');
+    });
 
-      $.each(rez, function (key, value) {
-        url = url.replace("$" + key, value || "");
-      });
+    if (params.length) {
+      url += (url.indexOf('?') > 0 ? '&' : '?') + params;
+    }
 
-      if (params.length) {
-        url += (url.indexOf("?") > 0 ? "&" : "?") + params;
-      }
+    return url;
+  };
 
-      return url;
-    };
-
-  //Add helper object
+  // Add helper object
   F.helpers.media = {
     defaults: {
       youtube: {
@@ -96,11 +94,11 @@
           fs: 1,
           rel: 0,
           hd: 1,
-          wmode: "opaque",
+          wmode: 'opaque',
           enablejsapi: 1,
         },
-        type: "iframe",
-        url: "//www.youtube.com/embed/$3",
+        type: 'iframe',
+        url: '//www.youtube.com/embed/$3',
       },
       vimeo: {
         matcher: /(?:vimeo(?:pro)?.com)\/(?:[^\d]+)?(\d+)(?:.*)/,
@@ -112,19 +110,19 @@
           show_portrait: 0,
           fullscreen: 1,
         },
-        type: "iframe",
-        url: "//player.vimeo.com/video/$1",
+        type: 'iframe',
+        url: '//player.vimeo.com/video/$1',
       },
       metacafe: {
         matcher: /metacafe.com\/(?:watch|fplayer)\/([\w\-]{1,10})/,
         params: {
-          autoPlay: "yes",
+          autoPlay: 'yes',
         },
-        type: "swf",
-        url: function (rez, params, obj) {
-          obj.swf.flashVars = "playerVars=" + $.param(params, true);
+        type: 'swf',
+        url(rez, params, obj) {
+          obj.swf.flashVars = `playerVars=${$.param(params, true)}`;
 
-          return "//www.metacafe.com/fplayer/" + rez[1] + "/.swf";
+          return `//www.metacafe.com/fplayer/${rez[1]}/.swf`;
         },
       },
       dailymotion: {
@@ -133,52 +131,52 @@
           additionalInfos: 0,
           autoStart: 1,
         },
-        type: "swf",
-        url: "//www.dailymotion.com/swf/video/$1",
+        type: 'swf',
+        url: '//www.dailymotion.com/swf/video/$1',
       },
       twitvid: {
         matcher: /twitvid\.com\/([a-zA-Z0-9_\-\?\=]+)/i,
         params: {
           autoplay: 0,
         },
-        type: "iframe",
-        url: "//www.twitvid.com/embed.php?guid=$1",
+        type: 'iframe',
+        url: '//www.twitvid.com/embed.php?guid=$1',
       },
       twitpic: {
         matcher: /twitpic\.com\/(?!(?:place|photos|events)\/)([a-zA-Z0-9\?\=\-]+)/i,
-        type: "image",
-        url: "//twitpic.com/show/full/$1/",
+        type: 'image',
+        url: '//twitpic.com/show/full/$1/',
       },
       instagram: {
         matcher: /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
-        type: "image",
-        url: "//$1/p/$2/media/?size=l",
+        type: 'image',
+        url: '//$1/p/$2/media/?size=l',
       },
       google_maps: {
         matcher: /maps\.google\.([a-z]{2,3}(\.[a-z]{2})?)\/(\?ll=|maps\?)(.*)/i,
-        type: "iframe",
-        url: function (rez) {
+        type: 'iframe',
+        url(rez) {
           return (
-            "//maps.google." +
-            rez[1] +
-            "/" +
-            rez[3] +
-            "" +
-            rez[4] +
-            "&output=" +
-            (rez[4].indexOf("layer=c") > 0 ? "svembed" : "embed")
+            `//maps.google.${
+              rez[1]
+            }/${
+              rez[3]
+            }${
+              rez[4]
+            }&output=${
+              rez[4].indexOf('layer=c') > 0 ? 'svembed' : 'embed'}`
           );
         },
       },
     },
 
-    beforeLoad: function (opts, obj) {
-      var url = obj.href || "",
-        type = false,
-        what,
-        item,
-        rez,
-        params;
+    beforeLoad(opts, obj) {
+      let url = obj.href || '';
+      let type = false;
+      let what;
+      let item;
+      let rez;
+      let params;
 
       for (what in opts) {
         if (opts.hasOwnProperty(what)) {
@@ -191,14 +189,13 @@
               true,
               {},
               item.params,
-              obj[what] ||
-                ($.isPlainObject(opts[what]) ? opts[what].params : null)
+              obj[what]
+                || ($.isPlainObject(opts[what]) ? opts[what].params : null),
             );
 
-            url =
-              $.type(item.url) === "function"
-                ? item.url.call(this, rez, params, obj)
-                : format(item.url, rez, params);
+            url = $.type(item.url) === 'function'
+              ? item.url.call(this, rez, params, obj)
+              : format(item.url, rez, params);
 
             break;
           }
@@ -213,4 +210,4 @@
       }
     },
   };
-})(jQuery);
+}(jQuery));
